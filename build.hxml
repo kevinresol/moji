@@ -1,0 +1,7 @@
+-cp sample
+-main Game
+-js bin/tests.js
+-debug
+-dce full
+
+-lib moji

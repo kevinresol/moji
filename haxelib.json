@@ -1,0 +1,17 @@
+{
+  "name": "moji",
+  "license": "MIT",
+  "tags": [
+    "text based",
+    "game engine"
+  ],
+  "classPath": "src",
+  "contributors": [
+    "kevinresol"
+  ],
+  "releasenote": "initial release",
+  "version": "0.0.0",
+  "dependencies": {
+    "tink_core": ""
+  }
+}
