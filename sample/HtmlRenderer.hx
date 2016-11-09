@@ -14,38 +14,30 @@ class HtmlRenderer implements Renderer {
 		this.div = div;
 	}
 	
+	public function end() {
+		clear();
+		var element = document.createElement('h1');
+		element.appendChild(document.createTextNode("Game Over"));
+		div.appendChild(element);
+	}
+	
 	public function prompt(content:Prompt) {
 		return Future.async(function(cb) {
-			var message = null;
-			var answers = [];
-			
-			var fetchMessage = content.message.get().map(function(v) {
-				message = v;
-				return Noise;
-			});
-			
-			var fetchAnswers = [for(i in 0...content.answers.length)
-				content.answers[i].get().map(function(v) {
-					answers[i] = v;
-					return Noise;
-				})
-			];
-			
-			Future.ofMany([fetchMessage].concat(fetchAnswers)).handle(function() {
+			content.resolve().handle(function(v) {
 				var element = document.createElement('div');
-				element.appendChild(document.createTextNode(message));
+				element.appendChild(document.createTextNode(v.message));
 				div.appendChild(element);
 				
-				for(i in 0...answers.length) {
-					switch answers[i] {
+				for(i in 0...v.answers.length) {
+					switch v.answers[i] {
 						case None:
 							// skip
 						case Some(v):
 							var element = document.createElement('button');
 							element.appendChild(document.createTextNode(v));
 							element.onclick = function() {
-								cb(i);
 								clear();
+								cb(i);
 							}
 							div.appendChild(element);
 					}

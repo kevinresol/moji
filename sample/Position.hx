@@ -10,6 +10,14 @@ abstract Position(PositionData) from PositionData to PositionData {
 	public function new(x:Int, y:Int)
 		return {x: x, y: y}
 		
+	public function move(direction:Direction)
+		switch direction {
+			case Left: this.x--;
+			case Right: this.x++;
+			case Up: this.y--;
+			case Down: this.y++;
+		}
+		
 	@:op(A==B)
 	public inline function eq(other:Position)
 		return this.x == other.x && this.y == other.y;
@@ -19,7 +27,7 @@ abstract Position(PositionData) from PositionData to PositionData {
 		return !eq(other);
 		
 	public function toString()
-		return '($x, $y)';
+		return '[$x, $y]';
 	
 	inline function get_x()
 		return this.x;

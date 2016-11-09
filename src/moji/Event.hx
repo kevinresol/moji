@@ -4,8 +4,7 @@ using tink.CoreApi;
 
 interface Event {
 	function run():Future<ElapsedTime>;
-	function prompt(content:Prompt):Future<AnswerIndex>;
+	function next():Option<Event>;
 }
 
 typedef ElapsedTime = Int;
-typedef AnswerIndex = Int;

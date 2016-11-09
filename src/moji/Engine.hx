@@ -4,13 +4,34 @@ using tink.CoreApi;
 
 class Engine {
 	
-	var renderer:Renderer;
+	public var renderer(default, null):Renderer;
+	public var elapsed(default, null):Int;
+	var current:Event;
+	var end:FutureTrigger<Noise>;
 	
 	public function new(renderer) {
 		this.renderer = renderer;
 	}
 	
-	public function prompt(content:Prompt)
-		return renderer.prompt(content);
+	public function start(event:Event) {
+		elapsed = 0;
+		end = Future.trigger();
+		current = event;
+		execute();
+		return end.asFuture();
+	}
+		
+	function execute() {
+		current.run().handle(function(e) {
+			elapsed += e;
+			switch current.next() {
+				case Some(event):
+					current = event;
+					execute();
+				case None:
+					end.trigger(Noise);
+			}
+		});
+	}
 		
 }
