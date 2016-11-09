@@ -2,14 +2,16 @@ package moji;
 
 using tink.CoreApi;
 
-class Engine {
+class Engine<T> {
 	
+	public var data(default, null):T;
 	public var renderer(default, null):Renderer;
 	public var elapsed(default, null):Int;
 	var current:Event;
 	var end:FutureTrigger<Noise>;
 	
-	public function new(renderer) {
+	public function new(data, renderer) {
+		this.data = data;
 		this.renderer = renderer;
 	}
 	

@@ -16,11 +16,17 @@ class Game {
 		var goal = Position.random(boardSize, boardSize);
 		while(goal == player) goal = Position.random(boardSize, boardSize);
 		
-		var engine = new Engine(new HtmlRenderer(js.Browser.document.getElementById('app')));
-		engine.start(new MoveEvent(engine, player, goal, boardSize)).handle(function(o) {
+		var data = {
+			boardSize: boardSize,
+			player: player,
+			goal: goal,
+		}
+		var renderer = new HtmlRenderer(js.Browser.document.getElementById('app'));
+		var engine = new Engine(data, renderer);
+		var seedEvent = new MoveEvent(engine);
+		engine.start(seedEvent).handle(function(o) {
 			trace('Steps used: ' + engine.elapsed);
 			engine.renderer.end();
 		});
 	}
 }
-

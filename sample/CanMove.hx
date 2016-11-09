@@ -6,21 +6,19 @@ using tink.CoreApi;
 class CanMove implements ConditionBase {
 	
 	var direction:Direction;
-	var player:Position;
-	var boardSize:Int;
+	var data:GameData;
 	
-	public function new(direction:Direction, player:Position, boardSize:Int) {
+	public function new(direction:Direction, data:GameData) {
 		this.direction = direction;
-		this.player = player;
-		this.boardSize = boardSize;
+		this.data = data;
 	}
 	
 	public function check():Future<Bool> {
 		return Future.sync(switch direction {
-			case Left: player.x > 0;
-			case Right: player.x < boardSize - 1;
-			case Up: player.y > 0;
-			case Down: player.y < boardSize - 1;
+			case Left: data.player.x > 0;
+			case Right: data.player.x < data.boardSize - 1;
+			case Up: data.player.y > 0;
+			case Down: data.player.y < data.boardSize - 1;
 		});
 	}
 }
