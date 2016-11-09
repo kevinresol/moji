@@ -26,7 +26,7 @@ class Engine<T> {
 	function execute() {
 		current.run().handle(function(e) {
 			elapsed += e;
-			current.next().handle(function(next) switch next {
+			current.next().resolve().handle(function(next) switch next {
 				case Some(event):
 					current = event;
 					execute();

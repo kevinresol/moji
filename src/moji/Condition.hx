@@ -6,7 +6,7 @@ using tink.CoreApi;
 abstract Condition(ConditionBase) from ConditionBase to ConditionBase {
 	
 	public function negate():Condition
-		return this.check().map(function(b) return !b);
+		return this.determine().map(function(b) return !b);
 		
 	public function then<T>(ifTrue:Conditional<T>, ifFalse:Conditional<T>):Conditional<T>
 		return new Conditional(this, ifTrue, ifFalse);
@@ -36,7 +36,7 @@ class SimpleCondition implements ConditionBase {
 	public function new(value)
 		this.value = value;
 		
-	public function check()
+	public function determine()
 		return value;
 		
 }
@@ -48,11 +48,11 @@ class AsyncCondition implements ConditionBase {
 	public function new(f)
 		this.f = f;
 		
-	public function check()
+	public function determine()
 		return f();
 		
 }
 
 interface ConditionBase {
-	function check():Future<Bool>;
+	function determine():Future<Bool>;
 }

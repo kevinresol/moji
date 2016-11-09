@@ -1,29 +1,33 @@
 package;
 
 import moji.*;
+import moji.Prompt;
+import condition.*;
 
 using tink.CoreApi;
 
 class MoveEvent implements Event {
 	var engine:Engine<GameData>;
 	var directions:Array<Direction> = [Left, Right, Up, Down];
+	var arrived:Condition;
 	
 	public function new(engine) {
 		this.engine = engine;
+		arrived = new Arrived(engine.data);
 	}
 	
 	public function run() {
 		return engine.renderer.prompt(new Prompt(
 			'Choose a direction to move (player: ${engine.data.player}, goal: ${engine.data.goal})',
-			directions.map(function(d) return canMove(d).then(Some(d.getName()), None))
+			[for(d in directions) canMove(d).then(Normal(d.getName()), Disabled(d.getName()))]
 		)).map(function(i) {
 			engine.data.player.move(directions[i]);
 			return 1; // elapsed one step
 		});
 	}
 	
-	public function next():Future<Option<Event>>
-		return Future.sync(engine.data.player == engine.data.goal ? None : Some(asEvent()));
+	public function next()
+		return arrived.then(None, Some(asEvent()));
 		
 	inline function asEvent():Event
 		return this;

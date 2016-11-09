@@ -4,7 +4,7 @@ using tink.CoreApi;
 
 class Prompt {
 	var message:Conditional<String>;
-	var answers:Array<Conditional<Option<String>>>;
+	var answers:Array<Conditional<Answer>>;
 	
 	public function new(message, answers) {
 		this.message = message;
@@ -16,13 +16,13 @@ class Prompt {
 			message: null,
 			answers: [],
 		}
-		var fetchMessage = message.get().map(function(v) {
+		var fetchMessage = message.resolve().map(function(v) {
 			ret.message = v;
 			return Noise;
 		});
 		
 		var fetchAnswers = [for(i in 0...answers.length)
-			answers[i].get().map(function(v) {
+			answers[i].resolve().map(function(v) {
 				ret.answers[i] = v;
 				return Noise;
 			})
@@ -30,4 +30,10 @@ class Prompt {
 		
 		return Future.ofMany([fetchMessage].concat(fetchAnswers)).map(function(_) return ret);
 	}
+}
+
+enum Answer {
+	Normal(v:String);
+	Disabled(v:String);
+	Hidden;
 }

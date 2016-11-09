@@ -25,9 +25,12 @@ class HtmlRenderer implements Renderer {
 				
 				for(i in 0...v.answers.length) {
 					switch v.answers[i] {
-						case None:
+						case Hidden:
 							// skip
-						case Some(v):
+						case Disabled(v):
+							var element = appendElement('button', v);
+							element.setAttribute('disabled', 'true');
+						case Normal(v):
 							var element = appendElement('button', v);
 							element.onclick = function() {
 								clear();

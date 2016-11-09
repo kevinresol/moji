@@ -2,7 +2,7 @@ package moji;
 
 import tink.CoreApi;
 
-@:forward(get)
+@:forward(resolve)
 abstract Conditional<T>(ConditionalBase<T>) from ConditionalBase<T> to ConditionalBase<T> {
 	
 	public inline function new(cond, ifTrue, ifFalse)
@@ -22,7 +22,7 @@ class Certain<T> implements ConditionalBase<T>{
 	public function new(value)
 		this.value = value;
 		
-	public function get()
+	public function resolve()
 		return value;
 }
 
@@ -37,11 +37,11 @@ class Branch<T> implements ConditionalBase<T> {
 		this.ifFalse = ifFalse;
 	}
 	
-	public function get():Future<T> {
-		return cond.check().flatMap(function(bool) return (bool ? ifTrue : ifFalse).get());
+	public function resolve():Future<T> {
+		return cond.determine().flatMap(function(bool) return (bool ? ifTrue : ifFalse).resolve());
 	}
 }
 
 interface ConditionalBase<T> {
-	function get():Future<T>;
+	function resolve():Future<T>;
 }

@@ -1,4 +1,4 @@
-package;
+package condition;
 
 import moji.Condition;
 using tink.CoreApi;
@@ -13,7 +13,7 @@ class CanMove implements ConditionBase {
 		this.data = data;
 	}
 	
-	public function check():Future<Bool> {
+	public function determine():Future<Bool> {
 		return Future.sync(switch direction {
 			case Left: data.player.x > 0;
 			case Right: data.player.x < data.boardSize - 1;
