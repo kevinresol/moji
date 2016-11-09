@@ -28,8 +28,8 @@ class MoveEvent implements Event {
 		});
 	}
 	
-	public function next():Option<Event>
-		return player == goal ? None : Some(asEvent());
+	public function next():Future<Option<Event>>
+		return Future.sync(player == goal ? None : Some(asEvent()));
 		
 	inline function asEvent():Event
 		return this;

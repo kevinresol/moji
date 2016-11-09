@@ -24,13 +24,13 @@ class Engine {
 	function execute() {
 		current.run().handle(function(e) {
 			elapsed += e;
-			switch current.next() {
+			current.next().handle(function(next) switch next {
 				case Some(event):
 					current = event;
 					execute();
 				case None:
 					end.trigger(Noise);
-			}
+			});
 		});
 	}
 		
