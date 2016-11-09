@@ -15,31 +15,24 @@ class HtmlRenderer implements Renderer {
 	}
 	
 	public function end() {
-		clear();
-		var element = document.createElement('h1');
-		element.appendChild(document.createTextNode("Game Over"));
-		div.appendChild(element);
+		appendElement('h1', 'Game Over');
 	}
 	
 	public function prompt(content:Prompt) {
 		return Future.async(function(cb) {
 			content.resolve().handle(function(v) {
-				var element = document.createElement('div');
-				element.appendChild(document.createTextNode(v.message));
-				div.appendChild(element);
+				appendElement('div', v.message);
 				
 				for(i in 0...v.answers.length) {
 					switch v.answers[i] {
 						case None:
 							// skip
 						case Some(v):
-							var element = document.createElement('button');
-							element.appendChild(document.createTextNode(v));
+							var element = appendElement('button', v);
 							element.onclick = function() {
 								clear();
 								cb(i);
 							}
-							div.appendChild(element);
 					}
 				}
 			});
@@ -48,5 +41,12 @@ class HtmlRenderer implements Renderer {
 	
 	function clear() {
 		while(div.firstChild != null) div.removeChild(div.firstChild);
+	}
+	
+	function appendElement(name:String, content:String) {
+		var element = document.createElement(name);
+		element.appendChild(document.createTextNode(content));
+		div.appendChild(element);
+		return element;
 	}
 }
