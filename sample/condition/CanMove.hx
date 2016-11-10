@@ -1,7 +1,8 @@
 package condition;
 
-import moji.Condition;
 import data.*;
+
+using moji.Moji;
 using tink.CoreApi;
 
 class CanMove implements ConditionBase {

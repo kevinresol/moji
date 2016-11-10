@@ -1,6 +1,23 @@
-package moji;
+package moji.core;
 
 import tink.CoreApi;
+
+
+@:forward
+abstract ConditionalOption<T>(Conditional<Option<T>>) from Conditional<Option<T>> to Conditional<Option<T>> {
+	@:from
+	public static function ofOption<V>(v:Option<V>):ConditionalOption<V>
+		return new Certain(Future.sync(v));
+	@:from
+	public static function ofConst<V>(v:V):ConditionalOption<V>
+		return ofOption(Some(v));
+	@:from
+	public static function ofFortune<V>(v:Future<Option<V>>):ConditionalOption<V>
+		return new Certain(v);
+	@:from
+	public static function ofFate<V>(v:Future<V>):ConditionalOption<V>
+		return ofFortune(v.map(function(v) return Some(v)));
+}
 
 @:forward(resolve)
 abstract Conditional<T>(ConditionalBase<T>) from ConditionalBase<T> to ConditionalBase<T> {

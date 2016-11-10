@@ -1,9 +1,9 @@
 package renderer;
 
-import moji.*;
 import js.Browser.*;
 import js.html.*;
 
+using moji.Moji;
 using tink.CoreApi;
 
 class HtmlRenderer implements Renderer {

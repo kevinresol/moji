@@ -1,10 +1,9 @@
 package event;
 
-import moji.*;
-import moji.Prompt;
 import condition.*;
 import data.*;
 
+using moji.Moji;
 using tink.CoreApi;
 
 class MoveEvent implements Event {
@@ -23,15 +22,15 @@ class MoveEvent implements Event {
 			[for(d in directions) canMove(d).then(Normal(d.getName()), Disabled(d.getName()))]
 		)).map(function(i) {
 			engine.game.player.move(directions[i]);
-			return 1; // elapsed one step
+			return {
+				elapsed: 1,
+				sub: [],
+			}
 		});
 	}
 	
 	public function next()
-		return arrived.then(None, Some(asEvent()));
-		
-	inline function asEvent():Event
-		return this;
+		return arrived.then(None, Some((this:Event)));
 	
 	inline function canMove(direction):Condition
 		return new CanMove(direction, engine.game);

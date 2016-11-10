@@ -1,4 +1,4 @@
-package moji;
+package moji.core;
 
 using tink.CoreApi;
 
