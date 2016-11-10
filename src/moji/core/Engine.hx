@@ -8,21 +8,26 @@ class Engine<T> {
 	public var elapsed(default, null):Int;
 	var renderer:Renderer;
 	var eventStack:Array<Event>;
+	var started:Bool;
 	
 	public function new(game, renderer) {
 		this.game = game;
 		this.renderer = renderer;
-		eventStack = [];
+		started = false;
 	}
 	
 	public function prompt(content)
 		return renderer.prompt(content);
 	
 	public function start(event:Event) {
+		if(started) return Future.sync(Failure(new Error('Already Started')));
+		started = true;
 		elapsed = 0;
+		eventStack = [];
 		return run(event).map(function(v) {
+			started = false;
 			renderer.end();
-			return v;
+			return Success(v);
 		});
 	}
 	
