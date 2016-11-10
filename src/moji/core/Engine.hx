@@ -19,13 +19,10 @@ class Engine<T> {
 		return renderer.prompt(content);
 	
 	public function start(event:Event) {
-		return Future.async(function(cb) {
-			elapsed = 0;
-			run(event).handle(function() {
-				renderer.end();
-				trace('end');
-				cb(Noise);
-			});
+		elapsed = 0;
+		return run(event).map(function(v) {
+			renderer.end();
+			return v;
 		});
 	}
 	
