@@ -31,7 +31,6 @@ class Prompt {
 		return Future.ofMany([fetchMessage].concat(fetchAnswers)).map(function(_) return ret);
 	}
 }
-
 enum Answer {
 	Normal(v:String);
 	Disabled(v:String);
