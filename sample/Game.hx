@@ -1,6 +1,9 @@
 package;
 
 import moji.*;
+import data.*;
+import renderer.*;
+import event.*;
 using tink.CoreApi;
 
 /**

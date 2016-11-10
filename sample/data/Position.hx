@@ -1,4 +1,4 @@
-package;
+package data;
 
 abstract Position(PositionData) from PositionData to PositionData {
 	public var x(get, never):Int;

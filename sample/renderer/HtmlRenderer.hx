@@ -1,4 +1,4 @@
-package;
+package renderer;
 
 import moji.*;
 import js.Browser.*;

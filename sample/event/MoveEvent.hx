@@ -1,8 +1,9 @@
-package;
+package event;
 
 import moji.*;
 import moji.Prompt;
 import condition.*;
+import data.*;
 
 using tink.CoreApi;
 
@@ -13,7 +14,7 @@ class MoveEvent implements Event {
 	
 	public function new(engine) {
 		this.engine = engine;
-		arrived = new Arrived(engine.data);
+		arrived = function() return engine.data.player == engine.data.goal;
 	}
 	
 	public function run() {

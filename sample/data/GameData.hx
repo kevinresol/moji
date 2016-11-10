@@ -1,4 +1,4 @@
-package;
+package data;
 
 typedef GameData = {
 	boardSize:Int,
