@@ -10,6 +10,7 @@ typedef ConditionalOption<T> = moji.core.Conditional.ConditionalOption<T>;
 typedef Engine<T> = moji.core.Engine<T>;
 
 typedef Event = moji.core.Event;
+typedef BasicEvent<T> = moji.core.Event.BasicEvent<T>;
 typedef EventResult = moji.core.Event.EventResult;
 typedef NextEvent = moji.core.Event.NextEvent;
 typedef SubEvents = moji.core.Event.SubEvents;

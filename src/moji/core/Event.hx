@@ -15,3 +15,24 @@ typedef EventResult = {
 
 typedef SubEvents = Array<ConditionalOption<Event>>;
 typedef NextEvent = ConditionalOption<Event>;
+
+
+class BasicEvent<T> implements Event {
+	var engine:Engine<T>;
+	
+	public function new(engine) {
+		this.engine = engine;
+	}
+	
+	public function run():Future<EventResult>
+		return Future.sync({
+			elapsed: 0,
+			sub: [],
+		});
+	
+	public function next():NextEvent
+		return None;
+	
+	inline function asEvent():Event
+		return this;
+} 
