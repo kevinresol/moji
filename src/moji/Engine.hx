@@ -25,25 +25,28 @@ class Engine<T> {
 	}
 	
 	public function run(events:EventList) {
-		if(events.length == 0) return runOne(events[0]);
-		
-		return Future.async(function(cb) {
-			var iter = events.iterator();
-			var current = iter.next();
-			var elapsed = 0;
-			function next()
-				current.run().handle(function(e) {
-					elapsed += e;
-					if(iter.hasNext()) {
-						current = iter.next();
-						next();
-					} else {
-						cb(elapsed);
-					}
+		return switch events.asArray() {
+			case []: Future.sync(0);
+			case [e]: runOne(e);
+			default:
+				Future.async(function(cb) {
+					var iter = events.iterator();
+					var current = iter.next();
+					var elapsed = 0;
+					function next()
+						runOne(current).handle(function(e) {
+							elapsed += e;
+							if(iter.hasNext()) {
+								current = iter.next();
+								next();
+							} else {
+								cb(elapsed);
+							}
+						});
+						
+					next();
 				});
-				
-			next();
-		});
+		}
 	}
 	
 	function runOne(event:Event) 
@@ -72,4 +75,6 @@ abstract EventList(Array<Event>) from Array<Event> to Array<Event> {
 	@:from
 	public static inline function ofSingle(e:Event):EventList
 		return [e];
+	public inline function asArray():Array<Event>
+		return this;
 }
