@@ -41,14 +41,14 @@ class Engine<T> {
 					var iter = s.iterator();
 					function sub() {
 						if(iter.hasNext()) {
-							iter.next().resolve().handle(function(o) switch o {
+							iter.next().evaluate().handle(function(o) switch o {
 								case Some(event): run(event).handle(sub);
 								case None: sub();
 							});
 						} else {
 							eventStack.pop();
 							trace('pop: ' + eventStack.map(function(e) return Type.getClassName(Type.getClass(e))));
-							event.next().resolve().handle(function(o) switch o {
+							event.next().evaluate().handle(function(o) switch o {
 								case Some(event): run(event).handle(cb);
 								case None: cb(Noise);
 							});

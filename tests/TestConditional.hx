@@ -13,13 +13,13 @@ class TestConditional extends BuddySuite {
 				var trueCond:Condition = true;
 				var falseCond:Condition = false;
 				
-				(1:Conditional<Int>).resolve().handle(function(v) v.should.be(1));
-				trueCond.then(1, 2).resolve().handle(function(v) v.should.be(1));
-				falseCond.then(1, 2).resolve().handle(function(v) v.should.be(2));
-				trueCond.then(trueCond.then(1, 2), falseCond.then(3, 4)).resolve().handle(function(v) v.should.be(1));
-				trueCond.then(falseCond.then(1, 2), falseCond.then(3, 4)).resolve().handle(function(v) v.should.be(2));
-				falseCond.then(trueCond.then(1, 2), trueCond.then(3, 4)).resolve().handle(function(v) v.should.be(3));
-				falseCond.then(trueCond.then(1, 2), falseCond.then(3, 4)).resolve().handle(function(v) v.should.be(4));
+				(1:Conditional<Int>).evaluate().handle(function(v) v.should.be(1));
+				trueCond.then(1, 2).evaluate().handle(function(v) v.should.be(1));
+				falseCond.then(1, 2).evaluate().handle(function(v) v.should.be(2));
+				trueCond.then(trueCond.then(1, 2), falseCond.then(3, 4)).evaluate().handle(function(v) v.should.be(1));
+				trueCond.then(falseCond.then(1, 2), falseCond.then(3, 4)).evaluate().handle(function(v) v.should.be(2));
+				falseCond.then(trueCond.then(1, 2), trueCond.then(3, 4)).evaluate().handle(function(v) v.should.be(3));
+				falseCond.then(trueCond.then(1, 2), falseCond.then(3, 4)).evaluate().handle(function(v) v.should.be(4));
 			});
 			
 			it("should evaluate async conditionals correctly", function(done) {
@@ -39,7 +39,7 @@ class TestConditional extends BuddySuite {
 				
 				function assert(e:Int, cond:Conditional<Int>, ?pos:haxe.PosInfos) {
 					retain();
-					cond.resolve().handle(function(v) {
+					cond.evaluate().handle(function(v) {
 						if(e != v) errors.push(new Error('Expected $e but got $v', pos));
 						release();
 					});

@@ -16,13 +16,13 @@ class Prompt {
 			message: null,
 			answers: [],
 		}
-		var fetchMessage = message.resolve().map(function(v) {
+		var fetchMessage = message.evaluate().map(function(v) {
 			ret.message = v;
 			return Noise;
 		});
 		
 		var fetchAnswers = [for(i in 0...answers.length)
-			answers[i].resolve().map(function(v) {
+			answers[i].evaluate().map(function(v) {
 				ret.answers[i] = v;
 				return Noise;
 			})

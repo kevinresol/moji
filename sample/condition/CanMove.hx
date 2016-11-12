@@ -5,7 +5,7 @@ import data.*;
 using moji.Moji;
 using tink.CoreApi;
 
-class CanMove implements ConditionBase {
+class CanMove extends ConditionBase {
 	
 	var direction:Direction;
 	var data:GameData;
@@ -15,7 +15,7 @@ class CanMove implements ConditionBase {
 		this.data = data;
 	}
 	
-	public function determine():Future<Bool> {
+	override function resolve():Future<Bool> {
 		return Future.sync(switch direction {
 			case Left: data.player.x > 0;
 			case Right: data.player.x < data.boardSize - 1;
