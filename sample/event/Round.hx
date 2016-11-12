@@ -6,9 +6,8 @@ import data.*;
 using moji.Moji;
 using tink.CoreApi;
 
-class MoveEvent implements Event {
+class Round implements Event {
 	var engine:Engine<GameData>;
-	var directions:Array<Direction> = [Left, Right, Up, Down];
 	var arrived:Condition;
 	
 	public function new(engine) {
@@ -18,14 +17,10 @@ class MoveEvent implements Event {
 	
 	public function run() {
 		return engine.prompt(new Prompt(
-			'Choose a direction to move (player: ${engine.game.player}, goal: ${engine.game.goal})',
-			[for(d in directions) canMove(d).then(Normal(d.getName()), Disabled(d.getName()))]
+			engine.elapsed + ': Choose an action (player: ${engine.game.player}, goal: ${engine.game.goal})',
+			[Normal('Move'), Normal('Stay')]
 		)).map(function(i) {
-			engine.game.player.move(directions[i]);
-			return {
-				elapsed: 1,
-				sub: [],
-			}
+			return Done(0, [i == 0 ? (new Move(engine):Event) : (new Stay(engine):Event)]);
 		});
 	}
 	

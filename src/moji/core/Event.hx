@@ -8,9 +8,9 @@ interface Event {
 	function next():NextEvent;
 }
 
-typedef EventResult = {
-	elapsed:Int,
-	sub:SubEvents,
+enum EventResult {
+	Done(elapsed:Int, sub:SubEvents);
+	Abort;
 }
 
 typedef SubEvents = Array<ConditionalOption<Event>>;
@@ -25,10 +25,7 @@ class BasicEvent<T> implements Event {
 	}
 	
 	public function run():Future<EventResult>
-		return Future.sync({
-			elapsed: 0,
-			sub: [],
-		});
+		return Future.sync(Done(0, []));
 	
 	public function next():NextEvent
 		return None;

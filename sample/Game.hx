@@ -27,7 +27,7 @@ class Game {
 		}
 		var renderer = new HtmlRenderer(js.Browser.document.getElementById('app'));
 		var engine = new Engine(data, renderer);
-		var seedEvent = new MoveEvent(engine);
+		var seedEvent = new Round(engine);
 		engine.start(seedEvent).handle(function() {
 			trace('Steps used: ' + engine.elapsed);
 		});

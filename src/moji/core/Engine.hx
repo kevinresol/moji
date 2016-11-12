@@ -35,25 +35,30 @@ class Engine<T> {
 		return Future.async(function(cb) {
 			eventStack.push(event);
 			trace('push: ' + eventStack.map(function(e) return Type.getClassName(Type.getClass(e))));
-			event.run().handle(function(result) {
-				elapsed += result.elapsed;
-				var iter = result.sub.iterator();
-				function sub() {
-					if(iter.hasNext()) {
-						iter.next().resolve().handle(function(o) switch o {
-							case Some(event): run(event).handle(sub);
-							case None: sub();
-						});
-					} else {
-						eventStack.pop();
-						trace('pop: ' + eventStack.map(function(e) return Type.getClassName(Type.getClass(e))));
-						event.next().resolve().handle(function(o) switch o {
-							case Some(event): run(event).handle(cb);
-							case None: cb(Noise);
-						});
+			event.run().handle(function(result) switch result {
+				case Done(e, s): 
+					elapsed += e;
+					var iter = s.iterator();
+					function sub() {
+						if(iter.hasNext()) {
+							iter.next().resolve().handle(function(o) switch o {
+								case Some(event): run(event).handle(sub);
+								case None: sub();
+							});
+						} else {
+							eventStack.pop();
+							trace('pop: ' + eventStack.map(function(e) return Type.getClassName(Type.getClass(e))));
+							event.next().resolve().handle(function(o) switch o {
+								case Some(event): run(event).handle(cb);
+								case None: cb(Noise);
+							});
+						}
 					}
-				}
-				sub();
+					sub();
+				case Abort:
+					eventStack.pop();
+					if(eventStack.length == 0) cb(Noise);
+					else run(eventStack.pop()).handle(cb);
 			});
 		});
 	}
