@@ -2,20 +2,20 @@ package moji.core;
 
 import tink.CoreApi;
 
-
 @:forward
-abstract ConditionalOption<T>(Conditional<Option<T>>) from Conditional<Option<T>> to Conditional<Option<T>> {
+abstract Maybe<T>(Conditional<Option<T>>) from Conditional<Option<T>> to Conditional<Option<T>> {
+		
 	@:from
-	public static function ofOption<V>(v:Option<V>):ConditionalOption<V>
+	public inline static function ofOption<V>(v:Option<V>):Maybe<V>
 		return new Certain(Future.sync(v));
 	@:from
-	public static function ofConst<V>(v:V):ConditionalOption<V>
+	public inline static function ofConst<V>(v:V):Maybe<V>
 		return ofOption(Some(v));
 	@:from
-	public static function ofFortune<V>(v:Future<Option<V>>):ConditionalOption<V>
+	public inline static function ofFortune<V>(v:Future<Option<V>>):Maybe<V>
 		return new Certain(v);
 	@:from
-	public static function ofFate<V>(v:Future<V>):ConditionalOption<V>
+	public inline static function ofFate<V>(v:Future<V>):Maybe<V>
 		return ofFortune(v.map(Some));
 }
 
@@ -24,6 +24,12 @@ abstract Conditional<T>(ConditionalObject<T>) from ConditionalObject<T> to Condi
 	
 	public inline function new(cond, ifTrue, ifFalse)
 		this = new Branch(cond, ifTrue, ifFalse);
+		
+	public inline function map<A>(f:T->A):Conditional<A>
+		return this.evaluate().map(f);
+		
+	public function flatMap<A>(f:T->Conditional<A>):Conditional<A>
+		return this.evaluate().flatMap(function(v) return f(v).evaluate());
 		
 	@:from
 	public static function ofConst<V>(v:V):Conditional<V>
@@ -42,27 +48,27 @@ abstract Conditional<T>(ConditionalObject<T>) from ConditionalObject<T> to Condi
 		return new LazyCertain(function() return v.get().evaluate());
 }
 
-class Certain<T> extends ConditionalBase<T> {
+class Certain<T> implements ConditionalObject<T> {
 	var value:Future<T>;
 	
 	public function new(value)
 		this.value = value;
 		
-	override function evaluate()
+	public function evaluate()
 		return value;
 }
 
-class LazyCertain<T> extends ConditionalBase<T> {
+class LazyCertain<T> implements ConditionalObject<T> {
 	var f:Void->Future<T>;
 	
 	public function new(f)
 		this.f = f;
 		
-	override function evaluate()
+	public function evaluate()
 		return f();
 }
 
-class Branch<T> extends ConditionalBase<T> {
+class Branch<T> implements ConditionalObject<T> {
 	var cond:Condition;
 	var ifTrue:Conditional<T>;
 	var ifFalse:Conditional<T>;
@@ -73,52 +79,10 @@ class Branch<T> extends ConditionalBase<T> {
 		this.ifFalse = ifFalse;
 	}
 	
-	override function evaluate():Future<T>
-		return cond.resolve().flatMap(function(bool) return (bool ? ifTrue : ifFalse).evaluate());
-}
-
-class ConditionalMap<T, A> extends ConditionalBase<A> {
-	var cond:Conditional<T>;
-	var f:T->A;
-	
-	public function new(cond, f) {
-		this.cond = cond;
-		this.f = f;
-	}
-	
-	override function evaluate():Future<A>
-		return cond.evaluate().map(f);
-}
-
-class ConditionalMapAsync<T, A> extends ConditionalBase<A> {
-	var cond:Conditional<T>;
-	var f:T->Conditional<A>;
-	
-	public function new(cond, f) {
-		this.cond = cond;
-		this.f = f;
-	}
-	
-	override function evaluate():Future<A>
-		return cond.evaluate().flatMap(function(v) return f(v).evaluate());
-}
-
-class ConditionalBase<T> implements ConditionalObject<T> {
 	public function evaluate():Future<T>
-		return Future.sync(null);
-	
-	public function map<A>(f:T->A):Conditional<A>
-		return new ConditionalMap(asConditional(), f);
-		
-	public function flatMap<A>(f:T->Conditional<A>):Conditional<A>
-		return new ConditionalMapAsync(asConditional(), f);
-	
-	inline function asConditional():Conditional<T>
-		return this;
+		return cond.check().flatMap(function(bool) return (bool ? ifTrue : ifFalse).evaluate());
 }
 
 interface ConditionalObject<T> {
 	function evaluate():Future<T>;
-	function map<A>(f:T->A):Conditional<A>;
-	function flatMap<A>(f:T->Conditional<A>):Conditional<A>;
 }

@@ -13,8 +13,8 @@ enum EventResult {
 	Abort;
 }
 
-typedef SubEvents = Array<ConditionalOption<Event>>;
-typedef NextEvent = ConditionalOption<Event>;
+typedef SubEvents = Array<Maybe<Event>>;
+typedef NextEvent = Maybe<Event>;
 
 
 class BasicEvent<T> implements Event {

@@ -4,17 +4,24 @@ using tink.CoreApi;
 
 @:forward
 abstract Condition(ConditionObject) from ConditionObject to ConditionObject {
+	
 	@:op(!A)
-	public inline function negate():Condition
-		return this.negate();
+	public function negate():Condition
+		return map(false, true);
 		
 	@:op(A&&B)
-	public inline function and(other:Condition):Condition
-		return this.and(other);
+	public function and(other:Condition):Condition
+		return combine([this, other], function(b) return b[0] && b[1]);
 		
 	@:op(A||B)
-	public inline function or(other:Condition):Condition
-		return this.or(other);
+	public function or(other:Condition):Condition
+		return combine([this, other], function(b) return b[0] || b[1]);
+		
+	public function map(ifTrue:Condition, ifFalse:Condition):Condition
+		return new ConditionMap(this, ifTrue, ifFalse);
+	
+	public function then<T>(ifTrue:Conditional<T>, ifFalse:Conditional<T>):Conditional<T>
+		return new Conditional(this, ifTrue, ifFalse);
 		
 	@:from
 	public static inline function ofConst(v:Bool):Condition
@@ -35,41 +42,41 @@ abstract Condition(ConditionObject) from ConditionObject to ConditionObject {
 	public static function combine(conds:Array<Condition>, f:Array<Bool>->Bool):Condition
 		return new ConditionCombine(conds, f);
 	
-	public static function andAll(conds:Array<Condition>):Condition
-		return new ConditionCombine(conds, function(bools) {
+	public static function all(conds:Array<Condition>):Condition
+		return combine(conds, function(bools) {
 			for(bool in bools) if(!bool) return false;
 			return true;
 		});
 		
-	public static function orAll(conds:Array<Condition>):Condition
-		return new ConditionCombine(conds, function(bools) {
+	public static function any(conds:Array<Condition>):Condition
+		return combine(conds, function(bools) {
 			for(bool in bools) if(bool) return true;
 			return false;
 		});
 }
 
-class SimpleCondition extends ConditionBase {
+class SimpleCondition implements ConditionObject {
 	var value:Future<Bool>;
 	
 	public function new(value)
 		this.value = value;
 		
-	override function resolve()
+	public function check()
 		return value;
 }
 
-class LazyCondition extends ConditionBase {
+class LazyCondition implements ConditionObject {
 	var f:Void->Future<Bool>;
 	
 	public function new(f)
 		this.f = f;
 		
-	override function resolve()
+	public function check()
 		return f();
 		
 }
 
-class ConditionMap extends ConditionBase {
+class ConditionMap implements ConditionObject {
 	var cond:Condition;
 	var ifTrue:Condition;
 	var ifFalse:Condition;
@@ -80,11 +87,11 @@ class ConditionMap extends ConditionBase {
 		this.ifFalse = ifFalse;
 	}
 	
-	override function resolve():Future<Bool>
-		return cond.resolve().flatMap(function(b) return (b ? ifTrue : ifFalse).resolve());
+	public function check():Future<Bool>
+		return cond.check().flatMap(function(b) return (b ? ifTrue : ifFalse).check());
 }
 
-class ConditionCombine extends ConditionBase {
+class ConditionCombine implements ConditionObject {
 	var conds:Array<Condition>;
 	var f:Array<Bool>->Bool;
 	
@@ -93,36 +100,10 @@ class ConditionCombine extends ConditionBase {
 		this.f = f;
 	}
 	
-	override function resolve():Future<Bool>
-		return Future.ofMany([for(c in conds) c.resolve()]).map(f);
-}
-
-class ConditionBase implements ConditionObject {
-	public function resolve():Future<Bool>
-		return Future.sync(true);
-	
-	public function negate():Condition
-		return new ConditionMap(this, false, true);
-		
-	public function and(other:Condition):Condition
-		return new ConditionCombine([this, other], function(b) return b[0] && b[1]);
-		
-	public function or(other:Condition):Condition
-		return new ConditionCombine([this, other], function(b) return b[0] || b[1]);
-		
-	public function map(ifTrue:Condition, ifFalse:Condition):Condition
-		return new ConditionMap(this, ifTrue, ifFalse);
-	
-	public function then<T>(ifTrue:Conditional<T>, ifFalse:Conditional<T>):Conditional<T>
-		return new Conditional(this, ifTrue, ifFalse);
-	
+	public function check():Future<Bool>
+		return Future.ofMany([for(c in conds) c.check()]).map(f);
 }
 
 interface ConditionObject {
-	function resolve():Future<Bool>;
-	function negate():Condition;
-	function and(other:Condition):Condition;
-	function or(other:Condition):Condition;
-	function map(ifTrue:Condition, ifFalse:Condition):Condition;
-	function then<T>(ifTrue:Conditional<T>, ifFalse:Conditional<T>):Conditional<T>;
+	function check():Future<Bool>;
 }

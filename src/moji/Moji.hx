@@ -1,11 +1,11 @@
 package moji;
 
 typedef Condition = moji.core.Condition;
-typedef ConditionBase = moji.core.Condition.ConditionBase;
+typedef ConditionObject = moji.core.Condition.ConditionObject;
 
 typedef Conditional<T> = moji.core.Conditional<T>;
-typedef ConditionalBase<T> = moji.core.Conditional.ConditionalBase<T>;
-typedef ConditionalOption<T> = moji.core.Conditional.ConditionalOption<T>;
+typedef ConditionalObject<T> = moji.core.Conditional.ConditionalObject<T>;
+typedef Maybe<T> = moji.core.Conditional.Maybe<T>;
 
 typedef Engine<T> = moji.core.Engine<T>;
 
