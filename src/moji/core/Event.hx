@@ -16,7 +16,6 @@ enum EventResult {
 typedef SubEvents = Array<Maybe<Event>>;
 typedef NextEvent = Maybe<Event>;
 
-
 class BasicEvent<T> implements Event {
 	var engine:Engine<T>;
 	

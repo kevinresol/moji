@@ -6,21 +6,21 @@ using tink.CoreApi;
 abstract Condition(ConditionObject) from ConditionObject to ConditionObject {
 	
 	@:op(!A)
-	public function negate():Condition
+	public inline function negate():Condition
 		return map(false, true);
 		
 	@:op(A&&B)
-	public function and(other:Condition):Condition
+	public inline function and(other:Condition):Condition
 		return combine([this, other], function(b) return b[0] && b[1]);
 		
 	@:op(A||B)
-	public function or(other:Condition):Condition
+	public inline function or(other:Condition):Condition
 		return combine([this, other], function(b) return b[0] || b[1]);
 		
-	public function map(ifTrue:Condition, ifFalse:Condition):Condition
+	public inline function map(ifTrue:Condition, ifFalse:Condition):Condition
 		return new ConditionMap(this, ifTrue, ifFalse);
 	
-	public function then<T>(ifTrue:Conditional<T>, ifFalse:Conditional<T>):Conditional<T>
+	public inline function then<T>(ifTrue:Conditional<T>, ifFalse:Conditional<T>):Conditional<T>
 		return new Conditional(this, ifTrue, ifFalse);
 		
 	@:from
@@ -39,7 +39,7 @@ abstract Condition(ConditionObject) from ConditionObject to ConditionObject {
 	public static inline function ofLazyAsync(f:Void->Future<Bool>):Condition
 		return new LazyCondition(f);
 		
-	public static function combine(conds:Array<Condition>, f:Array<Bool>->Bool):Condition
+	public static inline function combine(conds:Array<Condition>, f:Array<Bool>->Bool):Condition
 		return new ConditionCombine(conds, f);
 	
 	public static function all(conds:Array<Condition>):Condition

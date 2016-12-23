@@ -24,7 +24,7 @@ class Round implements Event {
 		});
 	}
 	
-	public function next()
+	public function next():NextEvent
 		return arrived.then(None, Some((this:Event)));
 	
 	inline function canMove(direction):Condition

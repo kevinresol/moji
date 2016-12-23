@@ -6,16 +6,16 @@ import tink.CoreApi;
 abstract Maybe<T>(Conditional<Option<T>>) from Conditional<Option<T>> to Conditional<Option<T>> {
 		
 	@:from
-	public inline static function ofOption<V>(v:Option<V>):Maybe<V>
-		return new Certain(Future.sync(v));
+	public static inline function ofOption<V>(v:Option<V>):Maybe<V>
+		return (v:Conditional<Option<V>>);
 	@:from
-	public inline static function ofConst<V>(v:V):Maybe<V>
+	public static inline function ofConst<V>(v:V):Maybe<V>
 		return ofOption(Some(v));
 	@:from
-	public inline static function ofFortune<V>(v:Future<Option<V>>):Maybe<V>
-		return new Certain(v);
+	public static inline function ofFortune<V>(v:Future<Option<V>>):Maybe<V>
+		return (v:Conditional<Option<V>>);
 	@:from
-	public inline static function ofFate<V>(v:Future<V>):Maybe<V>
+	public static inline function ofFate<V>(v:Future<V>):Maybe<V>
 		return ofFortune(v.map(Some));
 }
 
@@ -28,23 +28,23 @@ abstract Conditional<T>(ConditionalObject<T>) from ConditionalObject<T> to Condi
 	public inline function map<A>(f:T->A):Conditional<A>
 		return this.evaluate().map(f);
 		
-	public function flatMap<A>(f:T->Conditional<A>):Conditional<A>
+	public inline function flatMap<A>(f:T->Conditional<A>):Conditional<A>
 		return this.evaluate().flatMap(function(v) return f(v).evaluate());
 		
 	@:from
-	public static function ofConst<V>(v:V):Conditional<V>
+	public static inline function ofConst<V>(v:V):Conditional<V>
 		return new Certain(Future.sync(v));
 	
 	@:from
-	public static function ofFate<V>(v:Future<V>):Conditional<V>
+	public static inline function ofFate<V>(v:Future<V>):Conditional<V>
 		return new Certain(v);
 	
 	@:from
-	public static function flatten<V>(v:Future<Conditional<V>>):Conditional<V>
+	public static inline function flatten<V>(v:Future<Conditional<V>>):Conditional<V>
 		return new LazyCertain(function() return v.flatMap(function(c) return c.evaluate()));
 		
 	@:from
-	public static function ofLazy<V>(v:Lazy<Conditional<V>>):Conditional<V>
+	public static inline function ofLazy<V>(v:Lazy<Conditional<V>>):Conditional<V>
 		return new LazyCertain(function() return v.get().evaluate());
 }
 
